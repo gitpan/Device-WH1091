@@ -9,7 +9,7 @@ BEGIN {
     				$INTERFACES_NUM $REQTYPE $REQ $VAL $GET_SIZE $TIMEOUT
     				@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS 
     				);
-    $VERSION     = '0.01';
+    $VERSION     = '0.02';
     @ISA         = qw(Exporter);
     #Give a hoot don't pollute, do not export more than needed by default
     @EXPORT      = qw();
@@ -33,20 +33,6 @@ BEGIN {
 
 }
 
-
-
-#################### subroutine header begin ####################
-
-=head2 
-
- Usage     : new()
- Purpose   : Connect to weather Station
- Returns   : handle to new WH1091 object.
- Argument  : nothing
-
-=cut
-
-#################### subroutine header end ####################
 
 
 sub new
@@ -120,11 +106,6 @@ sub get_bufferval {
 }
 
 
-
-
-#################### main pod documentation begin ###################
-## Below is the stub of documentation for your module. 
-## You better edit it!
 
 
 
@@ -201,7 +182,7 @@ perl(1).
 
 
 1;
-# The preceding line will help the module return a true value
+
 
 
 
