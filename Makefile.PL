@@ -9,6 +9,5 @@ WriteMakefile(
     AUTHOR       => 'David Peters (davidp@electronf.com)',
     ABSTRACT     => 'Access data from the WH1081/1091 weather station.',
     PREREQ_PM    => {
-                     'Test::Simple' => 0.44,
                     },
 );

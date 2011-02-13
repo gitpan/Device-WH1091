@@ -9,7 +9,7 @@ BEGIN {
     				$INTERFACES_NUM $REQTYPE $REQ $VAL $GET_SIZE $TIMEOUT
     				@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS 
     				);
-    $VERSION     = '0.02';
+    $VERSION     = '0.03';
     @ISA         = qw(Exporter);
     #Give a hoot don't pollute, do not export more than needed by default
     @EXPORT      = qw();
@@ -33,20 +33,16 @@ BEGIN {
 
 }
 
-
-
-sub new
-{
-    my ($class, %parameters) = @_;
+sub new                                                                                                       
+{                                                                                                             
+	my ($class, %parameters) = @_;                                                                        
+	my $self = bless ({}, ref ($class) || $class);                                                        
+	$self->{'error'} = undef;                                                                             
+	$self->{'data'} = undef;                                                                              
 	
-	$class->{'error'} = undef;
-	$class->{'data'} = undef;
-	
-    my $self = bless ({}, ref ($class) || $class);
-
-    return $self;
-}
-
+	return $self;                                                                                         
+}                                                                                                             
+                                                                                                                                                         
 
 sub error {
 	my $self = shift;
@@ -80,12 +76,12 @@ sub getdata {
 	$self->{houtdoor} = get_bufferval($buffer2, 244);
 	$self->{windspeed} = get_bufferval($buffer2, 249)/10;
 	$self->{windgust} = get_bufferval($buffer2, 250)/10;
-	$self->{winddir} = get_bufferval($buffer2, 252);
+	$self->{winddir} = get_bufferval($buffer2, 252) * 22.5;
 	$self->{winddirtext} = $dir[$self->{winddir}];  
 	$self->{pressure} = get_bufferval($buffer2, 247, 248)/10;
-	#$self->{rain24h} = (get_bufferval($buffer2,253) / get_bufferval($buffer2,254)) / 10;
-	$self->{raintot} = get_bufferval($buffer2,285)*3/10;
+	$self->{raintot} = get_bufferval($buffer2,253,254) * 3 / 10;
 	return 1;	
+	
 }
 
 
@@ -117,7 +113,7 @@ Device::WH1091 - Access data from the WH1081/1091 weather station.
 =head1 SYNOPSIS
 
   use Device::WH1091;
-  my $weather=WH1091->new();
+  my $weather=Device::WH1091->new();
   
   $weather->getdata();
   
@@ -311,14 +307,16 @@ int getweather(SV* buffer2) {
 	_open_readw();
   	_init_wread();
 
+	// Read 0-31
   	_send_usb_msg("\xa1","\x00","\x00","\x20","\xa1","\x00","\x00","\x20");
   	_read_usb_msg(buf2);
-    _send_usb_msg("\xa1","\x00","\x20","\x20","\xa1","\x00","\x20","\x20");
-    _read_usb_msg(buf2+32);
-    _send_usb_msg("\xa1","\x00","\x40","\x20","\xa1","\x00","\x40","\x20");
-    _read_usb_msg(buf2+64);
-    _send_usb_msg("\xa1","\x00","\x60","\x20","\xa1","\x00","\x60","\x20");
-    _read_usb_msg(buf2+96);
+	// Read next 31
+	_send_usb_msg("\xa1","\x00","\x20","\x20","\xa1","\x00","\x20","\x20");
+	_read_usb_msg(buf2+32);
+	_send_usb_msg("\xa1","\x00","\x40","\x20","\xa1","\x00","\x40","\x20");
+	_read_usb_msg(buf2+64);
+	_send_usb_msg("\xa1","\x00","\x60","\x20","\xa1","\x00","\x60","\x20");
+	_read_usb_msg(buf2+96);
   	_send_usb_msg("\xa1","\x00","\x80","\x20","\xa1","\x00","\x80","\x20");
   	_read_usb_msg(buf2+128);
   	_send_usb_msg("\xa1","\x00","\xa0","\x20","\xa1","\x00","\xa0","\x20");
@@ -328,6 +326,7 @@ int getweather(SV* buffer2) {
   	_send_usb_msg("\xa1","\x00","\xe0","\x20","\xa1","\x00","\xe0","\x20");
  	_read_usb_msg(buf2+224);
    
+   	// Get History Start Address
 	int offset;
 	offset = (unsigned char) buf2[30] + ( 256 * buf2[31] );
    

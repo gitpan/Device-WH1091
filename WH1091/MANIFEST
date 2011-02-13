@@ -1,8 +1,0 @@
-MANIFEST
-README
-LICENSE
-Todo
-Changes
-Makefile.PL
-lib/Device/WH1091.pm
-t/001_load.t
